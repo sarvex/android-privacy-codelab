@@ -21,6 +21,7 @@ import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.CAMERA
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.READ_MEDIA_IMAGES
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -39,7 +40,7 @@ class PermissionManager(private val context: Context) {
             ACCESS_COARSE_LOCATION
         )
         val REQUIRED_PERMISSIONS_POST_T = arrayOf(
-            Manifest.permission.READ_MEDIA_IMAGES,
+            READ_MEDIA_IMAGES,
             CAMERA,
             ACCESS_FINE_LOCATION,
             ACCESS_COARSE_LOCATION
