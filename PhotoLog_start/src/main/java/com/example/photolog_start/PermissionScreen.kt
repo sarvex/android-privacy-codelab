@@ -16,6 +16,7 @@
 
 package com.example.photolog_start
 
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.compose.foundation.layout.Arrangement
@@ -53,7 +54,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.photolog_start.PermissionManager.Companion.REQUIRED_PERMISSIONS
+import com.example.photolog_start.PermissionManager.Companion.REQUIRED_PERMISSIONS_POST_T
+import com.example.photolog_start.PermissionManager.Companion.REQUIRED_PERMISSIONS_PRE_T
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -143,7 +145,14 @@ fun PermissionScreen(
                         Text("Go to settings")
                     }
                 } else {
-                    FilledTonalButton(onClick = { requestPermissions.launch(REQUIRED_PERMISSIONS) }) {
+                    FilledTonalButton(onClick = {
+                        if (Build.VERSION.SDK_INT >= 33) {
+                            requestPermissions.launch(REQUIRED_PERMISSIONS_POST_T)
+                        }
+                        else {
+                            requestPermissions.launch(REQUIRED_PERMISSIONS_PRE_T)
+                        }
+                    }) {
                         Text("Request permissions")
                     }
                 }

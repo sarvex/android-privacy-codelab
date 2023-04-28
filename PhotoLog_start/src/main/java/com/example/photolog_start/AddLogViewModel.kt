@@ -24,6 +24,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -143,14 +144,26 @@ class AddLogViewModel(
             location ?: return@addOnSuccessListener
 
             val geocoder = Geocoder(context, Locale.getDefault())
-            val address =
-                geocoder.getFromLocation(location.latitude, location.longitude, 1).firstOrNull()
-                    ?: return@addOnSuccessListener
-            val place =
-                address.locality ?: address.subAdminArea ?: address.adminArea ?: address.countryName
-                ?: return@addOnSuccessListener
 
-            uiState = uiState.copy(place = place)
+            if (Build.VERSION.SDK_INT >= 33)
+            {
+                geocoder.getFromLocation(location.latitude, location.longitude, 1) { addresses ->
+                    val address = addresses.firstOrNull()
+                    val place = address?.locality ?: address?.subAdminArea ?: address?.adminArea
+                    ?: address?.countryName
+                    uiState = uiState.copy(place = place)
+                }
+            }
+            else {
+                val address =
+                    geocoder.getFromLocation(location.latitude, location.longitude, 1)?.firstOrNull()
+                        ?: return@addOnSuccessListener
+                val place =
+                    address.locality ?: address.subAdminArea ?: address.adminArea ?: address.countryName
+                    ?: return@addOnSuccessListener
+
+                uiState = uiState.copy(place = place)
+            }
         }
     }
     // endregion
