@@ -27,6 +27,7 @@ import android.text.format.DateUtils
 import android.text.format.DateUtils.FORMAT_ABBREV_ALL
 import android.widget.DatePicker
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.PickMultipleVisualMedia
 import androidx.compose.foundation.clickable
@@ -287,7 +288,8 @@ fun AddLogScreen(
                                 canAddPhoto {
                                     viewModel.loadLocalPickerPictures()
                                     coroutineScope.launch {
-                                        internalPhotoPickerState.show()
+                                        pickImage.launch(PickVisualMediaRequest(
+                                            ActivityResultContracts.PickVisualMedia.ImageOnly))
                                     }
                                 }
                             }) {

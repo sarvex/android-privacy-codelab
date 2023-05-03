@@ -19,6 +19,7 @@ package com.example.photolog_start
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.CAMERA
+import android.Manifest.permission.READ_MEDIA_IMAGES
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.content.Context
 import android.content.Intent
@@ -31,8 +32,14 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class PermissionManager(private val context: Context) {
     companion object {
-        val REQUIRED_PERMISSIONS = arrayOf(
+        val REQUIRED_PERMISSIONS_PRE_T = arrayOf(
             READ_EXTERNAL_STORAGE,
+            CAMERA,
+            ACCESS_FINE_LOCATION,
+            ACCESS_COARSE_LOCATION
+        )
+        val REQUIRED_PERMISSIONS_POST_T = arrayOf(
+            READ_MEDIA_IMAGES,
             CAMERA,
             ACCESS_FINE_LOCATION,
             ACCESS_COARSE_LOCATION
@@ -50,7 +57,7 @@ class PermissionManager(private val context: Context) {
 
     private val _state = MutableStateFlow(
         State(
-            hasStorageAccess = hasAccess(READ_EXTERNAL_STORAGE),
+            hasStorageAccess = hasAccess(READ_EXTERNAL_STORAGE) || hasAccess(READ_MEDIA_IMAGES),
             hasCameraAccess = hasAccess(CAMERA),
             hasLocationAccess = hasAccess(listOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)),
         )
@@ -72,9 +79,10 @@ class PermissionManager(private val context: Context) {
 
     fun onPermissionChange(permissions: Map<String, Boolean>) {
         val hasLocationAccess = hasAccess(ACCESS_FINE_LOCATION) && hasAccess(ACCESS_COARSE_LOCATION)
+        val hasStorageAccess = hasAccess(READ_MEDIA_IMAGES) || hasAccess(READ_EXTERNAL_STORAGE)
 
         _state.value = State(
-            hasStorageAccess = permissions[READ_EXTERNAL_STORAGE] ?: _state.value.hasStorageAccess,
+            hasStorageAccess = hasStorageAccess,
             hasCameraAccess = permissions[CAMERA] ?: _state.value.hasCameraAccess,
             hasLocationAccess = hasLocationAccess
         )
@@ -82,7 +90,7 @@ class PermissionManager(private val context: Context) {
 
     suspend fun checkPermissions() {
         val newState = State(
-            hasStorageAccess = hasAccess(READ_EXTERNAL_STORAGE),
+            hasStorageAccess = hasAccess(READ_EXTERNAL_STORAGE) || hasAccess(READ_MEDIA_IMAGES),
             hasCameraAccess = hasAccess(CAMERA),
             hasLocationAccess = hasAccess(ACCESS_FINE_LOCATION) && hasAccess(ACCESS_COARSE_LOCATION)
         )
